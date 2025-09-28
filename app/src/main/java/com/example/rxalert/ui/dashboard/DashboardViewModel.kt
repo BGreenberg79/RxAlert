@@ -1,13 +1,25 @@
 package com.example.rxalert.ui.dashboard
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.rxalert.data.Prescription
+import com.example.rxalert.data.PrescriptionRepository
 
-class DashboardViewModel : ViewModel() {
+class DashboardViewModel(
+    private val prescriptionRepository: PrescriptionRepository
+) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
+    val prescriptions: LiveData<List<Prescription>> = prescriptionRepository.observePrescriptions()
+
+    init {
+        prescriptionRepository.resetDailyCounts()
     }
-    val text: LiveData<String> = _text
+
+    fun recordDose(prescriptionId: String) {
+        prescriptionRepository.recordDose(prescriptionId)
+    }
+
+    fun markRefill(prescriptionId: String) {
+        prescriptionRepository.markRefill(prescriptionId)
+    }
 }

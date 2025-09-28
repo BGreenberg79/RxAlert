@@ -4,35 +4,57 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.rxalert.data.PrescriptionRepository
 import com.example.rxalert.databinding.FragmentDashboardBinding
 
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var viewModel: DashboardViewModel
+    private lateinit var adapter: PrescriptionListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this).get(DashboardViewModel::class.java)
+        val repository = PrescriptionRepository.getInstance(requireContext())
+        viewModel = ViewModelProvider(
+            this,
+            DashboardViewModelFactory(repository)
+        )[DashboardViewModel::class.java]
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        setupRecyclerView()
+        observeViewModel()
+        return binding.root
+    }
 
-        val textView: TextView = binding.textDashboard
-        dashboardViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+    private fun setupRecyclerView() {
+        adapter = PrescriptionListAdapter(
+            onRecordDose = { prescription ->
+                viewModel.recordDose(prescription.id)
+            },
+            onMarkRefill = { prescription ->
+                viewModel.markRefill(prescription.id)
+            }
+        )
+        binding.prescriptionList.layoutManager = LinearLayoutManager(requireContext())
+        binding.prescriptionList.adapter = adapter
+    }
+
+        private fun observeViewModel() {
+        viewModel.prescriptions.observe(viewLifecycleOwner) { prescriptions ->
+            adapter.submitList(prescriptions)
+            binding.emptyState.isVisible = prescriptions.isEmpty()
         }
-        return root
     }
 
     override fun onDestroyView() {

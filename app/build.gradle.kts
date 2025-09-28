@@ -42,6 +42,12 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -55,3 +61,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     
 }
+/* Added Retrofit, Gson, coroutine, lifecycle, RecyclerView, and Fragment KTX 
+dependencies so the app can call RxNorm, parse JSON, run asynchronous 
+work, and render the new recycler views with view binding enabled for 
+the layouts.*/
